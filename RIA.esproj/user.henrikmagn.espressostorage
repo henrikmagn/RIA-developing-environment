@@ -2,23 +2,27 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>ESProjectShowHiddenFilesKey</key>
+	<false/>
 	<key>ESProjectWindowState</key>
 	<dict>
 		<key>ContentSize</key>
-		<string>{1920, 926}</string>
+		<string>{1680, 896}</string>
 		<key>ProjectURL</key>
-		<string>file://localhost/Users/henrikmagn/Desktop/ria/project/RIA.esproj/</string>
+		<string>file://localhost/Users/henrikmagn/Documents/ria/project/RIA.esproj/</string>
 		<key>StateType</key>
 		<string>ProjectWindow</string>
 		<key>TopLeftPoint</key>
-		<string>{0, 1058}</string>
+		<string>{0, 1028}</string>
 	</dict>
 	<key>com.macrabbit.Espresso.FileManager.DisclosureCollapsed</key>
 	<false/>
 	<key>com.macrabbit.Espresso.FileManager.FileControllerState</key>
 	<dict>
 		<key>ExpandedURLs</key>
-		<array/>
+		<array>
+			<string>file://localhost/Users/henrikmagn/Documents/ria/project/script</string>
+		</array>
 	</dict>
 	<key>com.macrabbit.Espresso.Publisher.DisclosureCollapsed</key>
 	<false/>
@@ -28,7 +32,19 @@
 		<array>
 			<dict>
 				<key>DocumentURL</key>
-				<string>file://localhost/Users/henrikmagn/Desktop/ria/project/index.html</string>
+				<string>file://localhost/Users/henrikmagn/Documents/ria/project/script/application.js</string>
+				<key>StateType</key>
+				<string>DefaultTab</string>
+			</dict>
+			<dict>
+				<key>DocumentURL</key>
+				<string>file://localhost/Users/henrikmagn/Documents/ria/project/index.html</string>
+				<key>StateType</key>
+				<string>DefaultTab</string>
+			</dict>
+			<dict>
+				<key>DocumentURL</key>
+				<string>file://localhost/Users/henrikmagn/Documents/ria/project/devenv/application-qunit.js</string>
 				<key>StateType</key>
 				<string>DefaultTab</string>
 			</dict>

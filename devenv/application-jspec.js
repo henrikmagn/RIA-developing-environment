@@ -8,4 +8,3 @@ JSpec.describe("My application",function(){
 		});
 	});
 });
-
