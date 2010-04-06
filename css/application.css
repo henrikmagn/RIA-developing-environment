@@ -1,11 +1,140 @@
+/** HTML Elements **/
 html, body {
 	text-align: center;
 	background-color: #CCC;
 }
 
+/** Wrappers **/
 #wrapper {
-	width: 600px;
-	background-color: #FFF;
-	margin: 0 auto;
+	width: 700px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 50px;
 	text-align: left;
 }
+
+#splashScreen
+{
+	position: absolute;
+	height: 710px;
+	width: 700px;
+	text-align: left;
+	background-color: #fff;
+}
+
+#projectsWrapper
+{
+	height: 700px;
+	width: 220px;
+	padding-top: 10px;
+	text-align: center;
+	float: left;
+}
+
+#singleProjectWrapper
+{
+	float: left;
+	padding: 10px;
+	width: 450px;
+	height: 690px;
+	overflow: auto;
+}
+
+#singleProjectWrapper h1
+{
+	margin: 0;
+	margin-bottom: 10px;
+	padding: 0;
+}
+
+/** Form Elements **/
+#projectText
+{
+	width: 194px;
+	height: 25px;
+}
+
+#projectButton
+{
+	margin: 10px;
+	width: 200px; 
+	height: 35px;
+}
+
+.bugTextField
+{
+	width: 250px; 
+	float: left; 
+	margin-right: 10px;
+}
+
+.commentTextField
+{
+	width:380px; 
+	float:left; 
+	margin-right:10px;
+}
+
+.createBugButton
+{
+	margin-top: 10px; 
+	width: 120px; 
+	height: 66px;
+}
+
+.commentButton
+{
+	width:120px;
+	height:40px;
+	margin-top:5px;
+}
+
+.editBugTextField
+{
+	width: 380px;
+	float: left;
+	margin-right: 10px;
+}
+
+/** ID's **/
+#projectsDiv
+{
+	margin-top: 10px;
+}
+
+/** Classes **/
+.project
+{
+	height: 30px;
+	width: 220px;
+	text-align: center;
+	padding-top: 8px;
+}
+
+.singleBug
+{
+	margin-top: 10px;
+	padding: 5px;
+}
+
+.comments
+{
+	margin-top: 10px;
+	padding: 5px;
+}
+
+.statusColor
+{
+	width: 10px;
+	height: 10px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border: 1px solid #000;
+	float: right;
+}
+
+.clear
+{
+	clear: both;
+}
+

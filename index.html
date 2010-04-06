@@ -6,18 +6,40 @@
 		<link rel="Stylesheet" href="css/reset-min.css" type="text/css" media="all" />
 		<link rel="Stylesheet" href="css/base-min.css" type="text/css" media="all" />
 		<link rel="Stylesheet" href="css/application.css" type="text/css" media="all" />
-        <title>My application</title>
+		<link rel="Stylesheet" href="css/smoothness/jquery-ui-1.8.custom.css" type="text/css" media="all" />
+        <title>BugTrackr</title>
     </head>
     <body>
-    	<div id="wrapper">
-	        <h1>Hejsan!</h1>
-			<p>V&auml;lkommen till min icke befintliga applikation!</p>
+    	
+    	<div id="wrapper" class='ui-widget ui-widget-content'>
+    		<div id="splashScreen">
+    		</div>
+	        <div id='projectsWrapper' class='ui-widget'>
+	        	<form id='projectForm'>
+	        		<input type='text' id='projectText' name='projectName' /><br />
+	        		<input type='submit' id='projectButton' value='Create project' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only' />
+	        	</form>
+	        	
+	        	<div id='projectsDiv'></div>
+	        </div>
+	        
+	        <div id='singleProjectWrapper'>
+	        </div>	 
+	        
+	        <div class='clear'></div>      	
 		</div>
-		<script type="text/javascript" src="script/resources/jquery-1.4.min.js"></script>
-		<script type="text/javascript" src="script/resources/jquery-include.js"></script>
-		<script type="text/javascript" src="script/application.js"></script>
+		<script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAA5Ub9rBHnMbT1cBDxOBA7gBSIiWh8I5ggctL-II6bogeEaAD8DBTC3hbtlpVlaK-8pATjRjLvNKrWMw"></script>
+		<script language="Javascript" type="text/javascript">
+		    //<![CDATA[
+		   		google.load("jquery", "1.4.0");
+		   		google.load("jqueryui", "1.8.0");
+		    //]]>
+		</script>
+		<script type="text/javascript" src="script/resources/jquery.ba-hashchange.js"></script>
+		<script type="text/javascript" src="script/resources/raphael-min.js"></script>
+		<script type="text/javascript" src="script/application-min.js"></script>
 		<!-- remove tags below here after development! -->
-		<script type="text/javascript">
+		<!--<script type="text/javascript">
 			window.devenvsettings = {
 				unittest : 'qunit',            // can be 'qunit' or 'jspec'
 				prettyprint : 'Application',   // the default datapath to prettyprint
@@ -25,8 +47,8 @@
 				lint : 'script/application.js' // default filepath to lint
 			};
 		</script>
-    	<script type="text/javascript" src="devenv/qunit/qunit.js"></script> <!-- cannot load dynamically, needs load event -->
-		<script type="text/javascript" src="devenv/devenv.js"></script>
+    	<script type="text/javascript" src="devenv/qunit/qunit.js"></script>
+		<script type="text/javascript" src="devenv/devenv.js"></script>-->
     </body>
 </html>
 

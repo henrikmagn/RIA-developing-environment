@@ -55,24 +55,7 @@
     Class.extend = arguments.callee;
     
     return Class;
-  };
-})();
-
-	(function($){
-		var appname = 'Application',
-		Singleton = {
-			init: function(){
-				$("h1").text("Application initialized!");
-			},
-			data: 
-			{
-				somedata: 'foobar',
-			}
-		};
-		
-		window[appname] = Singleton;  	// expose the singleton
-		Singleton.init();            	// initiate application
-	})(jQuery);
+};
 
 /**
  * @class A Project object
@@ -199,3 +182,447 @@ var Comment = Class.extend (
 	commentDate: null
 	
 });
+
+
+var BugTrackr = {
+	projectArray: [],
+	statusArray: [],
+	Project: Project,
+	Bug: Bug,
+	Status: Status,
+	Comment: Comment,
+		
+	dom: 
+	{
+	    wrapper: "wrapper",
+	    projectsWrapper: "projectsWrapper",
+	    projectForm: "projectForm",
+	    createProjectButton: "projectButton",
+	    projectsDiv: "projectsDiv",
+	    projectDiv: "project",
+	    bugText: "bugText",
+	    bugWrapper: "bugWrapper",
+	    createBug: "createBug",
+	    projectBugs: "projectBugs",
+	    statusSelect: "statusSelect",
+	    projectText: "projectText",
+	    singleProjectWrapper: "singleProjectWrapper",
+	    bugCommentsHref: "bugCommentsHref",
+	    bugEdit: "bugEdit",
+	    bugDelete: "bugDelete",
+	    bugComments: "bugComments",
+	    bugSave: "bugSave",
+	    commentText: "commentText",
+	    statusBug: "statusBug",
+	    bugDesc: "bugDesc",
+	    sendComment: "sendComment"
+	},
+	init: function()
+	{		
+		paper = new Raphael(document.getElementById('splashScreen'), 700, 700);
+
+		var t = paper.text((700 / 2), 100, "BugTrackr");
+		t.attr({fill: '#000', 'font-size': 44}); 
+		
+		var p = paper.path("M10 150 L10 150");		
+		p.attr({
+			stroke: '#000',
+		    'stroke-width': 7
+		});
+		
+		p.animate({  
+			path: "M 20 150 L680 150"  
+		}, 3000);  
+		
+		var i = paper.image("img/bug.png", (700 / 2 - (128 / 2)), 700, 128, 128);
+		
+		i.animate({y: 700 / 2 - 128 / 2}, 3000, 'bounce', function() {
+															$('#splashScreen').animate({
+															    opacity: 0
+															}, 500, function() {
+																$('#splashScreen').remove();
+															});														
+														});
+	
+		/** Creates the status objects */
+		BugTrackr.createStatuses();
+		
+		/** Creates example data */
+		var p = new Project("BugTrackr", this.getDateString());
+		var b1 = new Bug("#0", "This is an imaginary bug, that is probably very hard to solve.", this.getDateString(), this.statusArray[0]);
+		p.add(b1);
+		
+		var c1 = new Comment("We need to check this out before version 1.0.1", this.getDateString());
+		b1.add(c1);
+		
+		var b3 = new Bug("#1", "Show recently created project and set first project to active on startup", this.getDateString(), this.statusArray[3]);
+		p.add(b3);
+		
+		// this.projectArray.push(p);
+		
+		var p2 = new Project("Skilroy", this.getDateString());
+		var p3 = new Project("Exjobb", this.getDateString());
+		var p4 = new Project("iPhone app", this.getDateString());
+		// this.projectArray.push(p2);
+		// this.projectArray.push(p3);
+		// this.projectArray.push(p4);
+		
+		$("#" + this.dom.createProjectButton).bind("click",function(){
+			BugTrackr.createProject();
+			return false;
+		});				
+			
+		/** Check to se if there are any projects */
+		BugTrackr.checkForProjects();
+		
+		if(this.projectArray.length > 0)
+		{
+			this.showProject(0);
+			window.location.hash = "project0s"
+		}
+		
+		this.setup();
+	},
+	setup: function()
+	{
+		$(window).bind( 'hashchange', function(){
+		    var hash = location.hash;
+		    
+		    $("#" + BugTrackr.dom.projectsDiv + " a").each(function(index){
+		    	
+		    if(hash !== "")
+		    {	
+		    	var that = $(this);
+		      
+		      	if(that.attr('href') + "s" === hash)
+		      	{
+		      		that.parent().addClass('ui-state-active');
+					BugTrackr.showProject(index);
+		      	}
+		      	else
+		      	{
+		      		that.parent().removeClass('ui-state-active');
+		      	}
+		    }
+		    });  
+		})
+		 
+		$(window).trigger('hashchange');
+	},
+	/**
+	 * Checks for projects and draws the projects that exists
+	 */
+	checkForProjects: function()
+	{
+		/** Resets the div */
+		var projectsDiv = $("#" + this.dom.projectsDiv);
+		projectsDiv.text("");
+		
+		/** Iterates the project array and draws the HTML for each project */
+		$.each(this.projectArray, function(intIndex, p)
+		{
+			projectsDiv.append("<div class='project ui-state-default'><a href='#project" + intIndex + "' id='" + BugTrackr.dom.projectDiv + intIndex + "'>" + p.name + "</a></div>");
+			
+			var tempDiv = $("#" + BugTrackr.dom.projectDiv + intIndex);
+			
+			tempDiv.bind("click",function(){
+				window.location.hash = tempDiv.attr("id") + "s";
+				return false;
+			});
+			
+			tempDiv.mouseover(function(){
+			     tempDiv.parent().addClass("ui-state-hover");
+			   }).mouseout(function(){
+				tempDiv.parent().removeClass("ui-state-hover");
+			});
+		
+		});
+	},
+	/**
+	 * Creates a project from form data
+	 */
+	createProject: function()
+	{
+		var projectTextField = 	$("#" + this.dom.projectText);
+		var projectName = projectTextField.val();
+		var newProject = new Project(projectName, this.getDateString());
+		this.projectArray.push(newProject);
+		
+		this.checkForProjects();
+		projectTextField.val("");
+		this.showProject(this.projectArray.length - 1);
+		window.location.hash = "project" + (this.projectArray.length - 1) + "s";
+	},
+	/**
+	 * Draws HTML for single project
+	 * @param {int} index The index of the project
+	 */
+	showProject: function(index)
+	{
+		/** Gets the project object that was clicked */
+		var project = this.projectArray[index];
+		
+		/** Resets the single project div */
+		var sProjectWrapper = $("#" + this.dom.singleProjectWrapper);
+		sProjectWrapper.text("");
+		
+		/** Draws the project and its bugs */
+		sProjectWrapper.append("<h1>" + project.name + "</h1>");
+		sProjectWrapper.append("<textarea id='" + this.dom.bugText + "' rows='5' class='bugTextField' />");
+		sProjectWrapper.append("<select name='bugStatuses' id='" + this.dom.statusSelect + "'></select>");
+		
+		$.each(this.statusArray, function(intIndex, s)
+		{
+			$("#" + BugTrackr.dom.statusSelect).append("<option value='" + intIndex + "'>" + s.name + "</option>");
+		});
+						
+		sProjectWrapper.append("<input type='submit' id='" + this.dom.createBug + "' class='createBugButton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only' value='Create bug' />");
+		sProjectWrapper.append("<div class='clear'></div>");
+		sProjectWrapper.append("<div id='" + this.dom.projectBugs + "'></div>");
+		
+		$("#" + this.dom.createBug).bind("click",function(){
+			BugTrackr.createBug(project);
+			return false;
+		});
+		
+		BugTrackr.getProjectBugs(project);
+	},
+	/**
+	 * Fills the status array with status objects
+	 */
+	createStatuses: function()
+	{
+		if(this.statusArray.length === 0)
+		{
+			var s1 = new Status("New", "#FFA0A0");
+			this.statusArray.push(s1);
+			var s2 = new Status("Feedback", "#FF50A8");
+			this.statusArray.push(s2);
+			var s3 = new Status("Acknowledged", "#FFD850");
+			this.statusArray.push(s3);
+			var s4 = new Status("Confirmed", "#FFFFB0");
+			this.statusArray.push(s4);
+			var s5 = new Status("Assigned", "#C8C8FF");
+			this.statusArray.push(s5);
+			var s6 = new Status("Resolved", "#CCEEDD");
+			this.statusArray.push(s6);
+			var s7 = new Status("Closed", "#E8E8E8");
+			this.statusArray.push(s7);
+		}
+	},
+	/**
+	 * Gets bugs for a project and draws them
+	 * @param {project} project The project to get bugs for
+	 */
+	getProjectBugs: function(project)
+	{
+		/** Resets the bug div */
+		var projectBugsNode = $("#" + this.dom.projectBugs);
+		projectBugsNode.text("");
+		
+		/** Iterates the projects bugs  and draws them */
+		$.each(project.bugs, function(intIndex, b)
+		{			
+			projectBugsNode.append("<div id='" + BugTrackr.dom.bugWrapper + intIndex + "' class='singleBug'></div>");
+			var bugWrapper = $("#" + BugTrackr.dom.bugWrapper + intIndex);
+		
+			bugWrapper.append(b.bugDate + " - Status: " + b.bugStatus.name);
+			bugWrapper.append("<div class='statusColor' style='background-color: " + b.bugStatus.color + ";'></div><br />")
+			bugWrapper.append("<p>" + b.description + "</p>");
+			
+			bugWrapper.append("<a href='#' id='" + BugTrackr.dom.bugCommentsHref + intIndex + "'>Comments (" + b.comments.length + ")</a> - ");
+			bugWrapper.append("<a href='#' id='" + BugTrackr.dom.bugEdit + intIndex + "'>Edit</a> - ");
+			bugWrapper.append("<a href='#' id='" + BugTrackr.dom.bugDelete + intIndex + "'>Delete</a>");
+				
+			bugWrapper.append("<div id='" + BugTrackr.dom.bugComments + intIndex + "' class='comments'></div>");
+			var bugComments = $("#" + BugTrackr.dom.bugComments + intIndex);
+			
+			/** Iterates the comments for the bug and draws them */
+			$.each(b.comments, function(intIndex, c)
+			{
+				bugComments.append("<p>" + c.commentText + "<br />" + c.commentDate +"</p>");
+			});
+			
+			bugComments.append("<textarea id='" + BugTrackr.dom.commentText + intIndex + "' rows='3' class='commentTextField' /><br />");
+			bugComments.append("<input type='submit' id='"+BugTrackr.dom.sendComment + intIndex + "' value='Send' class='commentButton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only' />");
+			bugComments.append("<div class='clear'></div>");
+			bugComments.hide();
+			
+			bugWrapper.addClass("ui-corner-all");
+			bugWrapper.css("background-color", "#E6E6E6");
+			
+			$("#" + BugTrackr.dom.bugCommentsHref + intIndex).bind("click",function(){
+				BugTrackr.toggleComment(intIndex);
+			});
+			
+			$("#" + BugTrackr.dom.bugEdit + intIndex).bind("click",function(){
+				BugTrackr.editBug(project, intIndex);
+			});
+			
+			$("#" + BugTrackr.dom.bugDelete + intIndex).bind("click",function(){
+				BugTrackr.deleteBug(project, intIndex);
+			});
+			
+			$("#" + BugTrackr.dom.sendComment + intIndex + "").bind("click",function(){
+				BugTrackr.createComment(project, intIndex);
+				return false;
+			});
+		});
+	},
+	/**
+	 * Creates a bug from form data
+	 * @param {project} project The project to create the bug in
+	 */
+	createBug: function(project)
+	{
+		var bugText = $("#" + this.dom.bugText);
+		var bugStatus = this.statusArray[$("#" + this.dom.statusSelect).val()];
+		var bug = new Bug(project.bugs.length, bugText.val(), this.getDateString(), bugStatus);
+		project.add(bug);
+		
+		BugTrackr.getProjectBugs(project);
+		bugText.val("");
+	},
+	/**
+	 * Draws the edit bug form
+	 * @param {project} project The project to edit the bug in
+	 * @param {int} bugIndex The index of the bug to edit
+	 */
+	editBug: function (project, bugIndex)
+	{	
+		var b = project.bugs[bugIndex];
+		var bugWrapper = $("#" + this.dom.bugWrapper + bugIndex);
+		
+		bugWrapper.empty();
+		bugWrapper.append(b.bugDate + " - Status: ");
+		bugWrapper.append("<select name='bugStatuses' id='" + this.dom.statusBug + bugIndex + "'></select>");
+		
+		$.each(this.statusArray, function(intIndex, s)
+		{
+			$("#" + BugTrackr.dom.statusBug + bugIndex + "").append("<option value='" + intIndex + "'>" + s.name + "</option>");
+		});
+		
+		/** Selects the status the bug has */
+		$.each(this.statusArray, function(intIndex, s)
+		{
+			if(s === b.bugStatus)
+			{
+				$("#" + BugTrackr.dom.statusBug + bugIndex + " option[value='" + intIndex + "']").attr('selected', 'selected');
+			}
+		});
+		
+		bugWrapper.append("<div class='statusColor' style='background-color: " + b.bugStatus.color + ";'></div><br />")
+		bugWrapper.append("<textarea id='" + this.dom.bugDesc + bugIndex + "' rows='3' class='editBugTextField'>" + b.description + "</textarea><br />");
+		bugWrapper.append("<a href='#' id='" + this.dom.bugCommentsHref + bugIndex + "'>Comments (" + b.comments.length + ")</a> - ");
+		bugWrapper.append("<a href='#' id='" + this.dom.bugSave + bugIndex + "'>Save</a> - ");
+		bugWrapper.append("<a href='#' id='" + this.dom.bugDelete + bugIndex + "'>Delete</a>");
+			
+		bugWrapper.append("<div id='" + this.dom.bugComments + bugIndex + "' class='comments'></div>");
+		var bugComments = $("#" + BugTrackr.dom.bugComments + bugIndex);
+		
+		/** Iterates the bugs comments */
+		$.each(b.comments, function(intIndex, c)
+		{
+			bugComments.append("<p>" + c.commentText + "<br />" + c.commentDate +"</p>");
+		});
+		
+		bugComments.append("<textarea id='" +  this.dom.commentText + bugIndex + "' rows='3' class='commentTextField' /><br />");
+		bugComments.append("<input type='submit' id='" + this.dom.sendComment + bugIndex + "' class='commentButton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only' value='Send' />");
+		bugComments.append("<div class='clear'></div>");
+		bugComments.hide();
+		
+		$("#bugCommentsHref" + bugIndex).bind("click",function(){
+			BugTrackr.toggleComment(bugIndex);
+		});
+		
+		$("#bugSave" + bugIndex).bind("click",function(){
+			BugTrackr.saveBug(project, bugIndex);
+		});
+		
+		$("#bugDelete" + bugIndex).bind("click",function(){
+			BugTrackr.deleteBug(project, bugIndex);
+		});
+		
+		$("#sendComment" + bugIndex).bind("click",function(){
+			BugTrackr.createComment(project, bugIndex);
+			return false;
+		});
+	},
+	/**
+	 * Saves bug with help from form data
+	 * @param {project} project The project to save the bug in
+	 * @param {int} bugIndex The index of the bug to save
+	 */
+	saveBug: function(project, bugIndex)
+	{
+		var bug = project.bugs[bugIndex];
+		var bugStatus = this.statusArray[$("#" + this.dom.statusBug + bugIndex + "").val()];
+		bug.description = $("#" + this.dom.bugDesc + bugIndex).val();
+		bug.bugStatus = bugStatus;
+		BugTrackr.getProjectBugs(project);
+	},
+	/**
+	 * Delete a bug with index
+	 * @param {project} project The project to delete the bug from
+	 * @param {int} bugIndex The index of the bug to delete
+	 */
+	deleteBug: function(project, bugIndex)
+	{
+		project.bugs.splice(bugIndex, 1);
+		BugTrackr.getProjectBugs(project);
+	},
+	/**
+	 * Creates a comment
+	 * @param {project} project The project to create the comment in
+	 * @param {int} index The index of the bug to post the comment for
+	 */
+	createComment: function(project, index)
+	{
+		var bug = project.bugs[index];
+		
+		var comment = new Comment($("#" + this.dom.commentText + index + "").val(), BugTrackr.getDateString());
+		bug.add(comment);
+		BugTrackr.getProjectBugs(project);
+	},
+	/**
+	 * Toggles the visibility of comments
+	 * @param {int} index The index of the bug to toggle comments for
+	 */
+	toggleComment: function(index)
+	{
+		$("#" + this.dom.bugComments + index).slideToggle("slow");
+	},
+	/**
+	 * Returns a formated string of current time
+	 */
+	getDateString: function()
+	{
+		var date = new Date();
+		var year = date.getFullYear();
+		var month = date.getMonth() + 1;
+		if (month < 10){
+			month = "0" + month;
+		}
+		
+		var day = date.getDate();
+		var hour = date.getHours();
+		if (hour < 10){
+			hour = "0" + hour;
+		}
+		
+		var minutes = date.getMinutes();
+		if (minutes < 10){
+			minutes = "0" + minutes;
+		}
+		
+		var dateStr = year + "-" + month + "-" + day + " " + hour + ":" + minutes;
+		return dateStr;
+	},
+	data: 
+	{
+		
+	}};
+	
+	BugTrackr.init();				// initiate application		
+	window.BugTrackr = BugTrackr;	// expose the BugTrackr
+})();
