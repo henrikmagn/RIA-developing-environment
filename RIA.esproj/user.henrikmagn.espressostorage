@@ -22,6 +22,7 @@
 		<key>ExpandedURLs</key>
 		<array>
 			<string>file://localhost/Users/henrikmagn/Documents/ria/project/css</string>
+			<string>file://localhost/Users/henrikmagn/Documents/ria/project/img</string>
 			<string>file://localhost/Users/henrikmagn/Documents/ria/project/script</string>
 		</array>
 	</dict>
@@ -31,12 +32,6 @@
 	<dict>
 		<key>Tabs</key>
 		<array>
-			<dict>
-				<key>DocumentURL</key>
-				<string>file://localhost/Users/henrikmagn/Documents/ria/project/css/application.css</string>
-				<key>StateType</key>
-				<string>DefaultTab</string>
-			</dict>
 			<dict>
 				<key>DocumentURL</key>
 				<string>file://localhost/Users/henrikmagn/Documents/ria/project/script/application.js</string>

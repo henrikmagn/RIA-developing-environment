@@ -247,25 +247,12 @@ var BugTrackr = {
 		/** Creates the status objects */
 		BugTrackr.createStatuses();
 		
-		/** Creates example data */
-		var p = new Project("BugTrackr", this.getDateString());
-		var b1 = new Bug("#0", "This is an imaginary bug, that is probably very hard to solve.", this.getDateString(), this.statusArray[0]);
-		p.add(b1);
+		if (typeof(localStorage) == "undefined")
+		{
+			alert("Local storage not supported by this browser.");
+		}
 		
-		var c1 = new Comment("We need to check this out before version 1.0.1", this.getDateString());
-		b1.add(c1);
-		
-		var b3 = new Bug("#1", "Show recently created project and set first project to active on startup", this.getDateString(), this.statusArray[3]);
-		p.add(b3);
-		
-		// this.projectArray.push(p);
-		
-		var p2 = new Project("Skilroy", this.getDateString());
-		var p3 = new Project("Exjobb", this.getDateString());
-		var p4 = new Project("iPhone app", this.getDateString());
-		// this.projectArray.push(p2);
-		// this.projectArray.push(p3);
-		// this.projectArray.push(p4);
+		this.checkSavedProjects();
 		
 		$("#" + this.dom.createProjectButton).bind("click",function(){
 			BugTrackr.createProject();
@@ -273,7 +260,7 @@ var BugTrackr = {
 		});				
 			
 		/** Check to se if there are any projects */
-		BugTrackr.checkForProjects();
+		BugTrackr.drawProjects();
 		
 		if(this.projectArray.length > 0)
 		{
@@ -309,10 +296,39 @@ var BugTrackr = {
 		 
 		$(window).trigger('hashchange');
 	},
+	checkSavedProjects: function()
+	{
+		var retreivedProjects = localStorage.getItem('projects');
+		var parsedProjects = JSON.parse(retreivedProjects);
+	
+		for(var p in parsedProjects)
+		{
+			var currentProject = parsedProjects[p];
+			var newP = new Project(currentProject.name, currentProject.createDate);
+			
+			for(var b in currentProject.bugs)
+			{
+				var bug = currentProject.bugs[b];
+			 	var bStatus = new Status(bug.bugStatus.name, bug.bugStatus.color);
+			 	var newB = new Bug(bug.id, bug.description, bug.bugDate, bStatus);
+			 	
+			 	for(var c in bug.comments)
+			 	{
+			 		var comment = bug.comments[c];
+			 		var newC = new Comment(comment.commentText, comment.commentDate);
+			 		newB.comments.push(newC);
+			 	}
+			 	
+			 	newP.bugs.push(newB);
+			 }
+			 
+			 this.projectArray.push(newP);
+		}
+	},
 	/**
-	 * Checks for projects and draws the projects that exists
-	 */
-	checkForProjects: function()
+	* Checks for projects and draws the projects that exists
+	*/
+	drawProjects: function()
 	{
 		/** Resets the div */
 		var projectsDiv = $("#" + this.dom.projectsDiv);
@@ -321,8 +337,12 @@ var BugTrackr = {
 		/** Iterates the project array and draws the HTML for each project */
 		$.each(this.projectArray, function(intIndex, p)
 		{
-			projectsDiv.append("<div class='project ui-state-default'><a href='#project" + intIndex + "' id='" + BugTrackr.dom.projectDiv + intIndex + "'>" + p.name + "</a></div>");
+			var html = "<div class='project ui-state-default'>";
+				html += "<a href='#project" + intIndex + "' id='" + BugTrackr.dom.projectDiv + intIndex + "'>" + p.name + "</a>";
+			html += "</div>";
 			
+			projectsDiv.append(html);
+						
 			var tempDiv = $("#" + BugTrackr.dom.projectDiv + intIndex);
 			
 			tempDiv.bind("click",function(){
@@ -347,8 +367,9 @@ var BugTrackr = {
 		var projectName = projectTextField.val();
 		var newProject = new Project(projectName, this.getDateString());
 		this.projectArray.push(newProject);
+		localStorage.setItem('projects', JSON.stringify(this.projectArray));
 		
-		this.checkForProjects();
+		this.drawProjects();
 		projectTextField.val("");
 		this.showProject(this.projectArray.length - 1);
 		window.location.hash = "project" + (this.projectArray.length - 1) + "s";
@@ -479,6 +500,7 @@ var BugTrackr = {
 		var bugStatus = this.statusArray[$("#" + this.dom.statusSelect).val()];
 		var bug = new Bug(project.bugs.length, bugText.val(), this.getDateString(), bugStatus);
 		project.add(bug);
+		localStorage.setItem('projects', JSON.stringify(this.projectArray));
 		
 		BugTrackr.getProjectBugs(project);
 		bugText.val("");
@@ -559,6 +581,8 @@ var BugTrackr = {
 		var bugStatus = this.statusArray[$("#" + this.dom.statusBug + bugIndex + "").val()];
 		bug.description = $("#" + this.dom.bugDesc + bugIndex).val();
 		bug.bugStatus = bugStatus;
+		localStorage.setItem('projects', JSON.stringify(this.projectArray));
+		
 		BugTrackr.getProjectBugs(project);
 	},
 	/**
@@ -569,6 +593,8 @@ var BugTrackr = {
 	deleteBug: function(project, bugIndex)
 	{
 		project.bugs.splice(bugIndex, 1);
+		localStorage.setItem('projects', JSON.stringify(this.projectArray));
+		
 		BugTrackr.getProjectBugs(project);
 	},
 	/**
@@ -582,6 +608,8 @@ var BugTrackr = {
 		
 		var comment = new Comment($("#" + this.dom.commentText + index + "").val(), BugTrackr.getDateString());
 		bug.add(comment);
+		localStorage.setItem('projects', JSON.stringify(this.projectArray));
+		
 		BugTrackr.getProjectBugs(project);
 	},
 	/**

@@ -9,7 +9,6 @@ html, body {
 	width: 700px;
 	margin-left: auto;
 	margin-right: auto;
-	margin-top: 50px;
 	text-align: left;
 }
 
@@ -131,6 +130,14 @@ html, body {
 	-moz-border-radius: 5px;
 	border: 1px solid #000;
 	float: right;
+}
+
+.deleteProjectImg
+{
+	float: right;
+	margin-right: 10px;
+	width: 12px;
+	height: 12px;	
 }
 
 .clear
